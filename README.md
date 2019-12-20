@@ -1,5 +1,5 @@
 # weather-and-gis-docker
-This is the Dockerfile for an image with a ton of weather, gis, and earth science based packages. It is intended to help ocean sailboat navigators get up and running quickly, but will hopefully also be useful for nerds with other goals.
+This is the Dockerfile for an image with a ton of weather, gis, and earth science based packages. It is intended to help ocean sailboat navigators get up and running quickly, but will hopefully also be useful to nerds with other goals.
 
 The image is based on Ubuntu 18.04 and includes Python3.8.
 Note that Python3.8 replaces Python2.7 entirely via a symlink.
@@ -44,11 +44,12 @@ This is probably a bad idea but it seems to work for my purposes.
 
 
 # Installation and Use:
-`docker build .`  
+`$ docker build -t weather_image:1.0 .`  
 // Wait like an hour  
-`docker images`  
 // Create a new container that can read/write to local directory.  
-`docker run -it --mount type=bind,source=$(pwd),target=/data <Image Id> /bin/zsh`  
+`docker run -it --mount type=bind,source=$(pwd),target=/data --name weather_shell weather_image:1.0  /bin/zsh`  
+// Then later after you exit your container, to get back into it:  
+`docker start -a weather_shell`  
 
 # What can you do with this?
 - Write a python script to pull down the png of an analysis or ascat image and make white space transparent,
