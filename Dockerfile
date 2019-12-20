@@ -140,6 +140,11 @@ RUN wget ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/wgrib.tar \
     && cd .. \
     && rm -rf wgrib1
 
+# Oh my zsh
+RUN apt-get install zsh fonts-powerline -y \
+    && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
+    && chsh -s $(which zsh)
+
 # TODO: degrib
 
 WORKDIR /data
