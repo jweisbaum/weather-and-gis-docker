@@ -48,7 +48,7 @@ This is probably a bad idea but it seems to work for my purposes.
 // Wait like an hour  
 `docker images`  
 // Create a new container that can read/write to local directory.  
-`docker run -it --mount type=bind,source=$(pwd),target=/data <Image Id> /bin/zsh'  
+`docker run -it --mount type=bind,source=$(pwd),target=/data <Image Id> /bin/zsh`  
 
 # What can you do with this?
 - Write a python script to pull down the png of an analysis or ascat image and make white space transparent,
