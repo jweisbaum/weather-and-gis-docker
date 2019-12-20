@@ -145,6 +145,10 @@ RUN apt-get install zsh fonts-powerline -y \
     && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
     && chsh -s $(which zsh)
 
+# Editors
+RUN apt-get install emacs nano -y
+
+ 
 # TODO: degrib
 
 WORKDIR /data
