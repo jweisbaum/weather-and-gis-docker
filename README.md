@@ -49,12 +49,14 @@ This is probably a bad idea but it seems to work for my purposes.
 // Create a new container that can read/write to local directory.  
 `docker run -it --mount type=bind,source=$(pwd),target=/data --name weather_shell weather_image:1.0  /bin/zsh`  
 // Then later after you exit your container, to get back into it:  
-`docker start -a weather_shell`  
+`docker start -a weather_shell`
 
 # What can you do with this?
 - Write a python script to pull down the png of an analysis or ascat image and make white space transparent,
 - Reproject images, 
 - Script grib analysis,
+- Convert NetCDF to Grib2
+- List grib messages
 - Run this in the cloud and build a server to parse and push grib excerpts while you're sailing, 
 - Probably a lot of other thigns. 
 
