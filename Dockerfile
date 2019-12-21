@@ -126,6 +126,7 @@ RUN git clone https://github.com/powerline/fonts.git --depth=1 \
     && cd .. \
     && rm -rf fonts 
 
+ENV ZSH_THEME avit
 # Oh my zsh
 RUN apt-get install zsh fonts-powerline -y \
     && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
@@ -134,6 +135,7 @@ RUN apt-get install zsh fonts-powerline -y \
 # Editors
 RUN apt-get install emacs nano -y
 
+RUN apt-get install tmux -y
 # TODO: degrib
 
 WORKDIR /data
