@@ -14,6 +14,7 @@ You may have very little experience with software development or navigating comp
 - We can build a community and shared knowledge base using the same tool set.  
 - Docker machines can see files on your local machine and vice versa.  
 - You can run this at home or in the cloud, ssh into it from your boat, do your analysis and only pull down a smaller excerpt of data.  
+- Linux utils have offline man pages for help and documentation.  
 
 # Included Linux Utilities and Libraries:
 - tesseract
