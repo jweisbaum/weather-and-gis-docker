@@ -73,13 +73,16 @@ ENV USE_NETCDF4 1
 RUN tar -xzf wgrib2.tgz \
   && cd grib2 \
   && make
-RUN cp grib2/wgrib2/wgrib2 /usr/local/bin
+  
+RUN cp grib2/wgrib2/wgrib2 /usr/local/bin \
+    && rm -rf grib2 \
+    && rm wgrib2.tgz
 
 #Install ImageMagick
 RUN cd /opt \
     && wget http://www.imagemagick.org/download/ImageMagick.tar.gz \
     && tar xvzf ImageMagick.tar.gz \
-    && cd ImageMagick-7.0.9-9 \
+    && cd ImageMagick-7.0.9-10 \
     && touch configure \
     && ./configure \
     && make \
@@ -110,6 +113,7 @@ RUN pip3 install numpy \
 RUN apt-get install libeccodes0 \
     && pip3 install cfgrib
 
+# Wgrib1
 RUN wget ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/wgrib.tar \
     && mkdir wgrib1 \
     && tar -C wgrib1 -xvf wgrib.tar \
@@ -133,10 +137,34 @@ RUN apt-get install zsh fonts-powerline -y \
     && chsh -s $(which zsh)
 
 # Editors
-RUN apt-get install emacs nano -y
+RUN apt-get install emacs nano tmux -y
 
-RUN apt-get install tmux -y
-# TODO: degrib
+# CMake
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.15.2.tar.gz \
+    && tar -zxvf cmake-3.15.2.tar.gz \
+    && cd cmake-3.15.2 \
+    && ./bootstrap \
+    && make \
+    && make install \
+    && cd .. \
+    && rm cmake-3.15.2.tar.gz \
+    && rm -rf cmake-3.15.2
+
+# ecCODES
+RUN wget https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.15.0-Source.tar.gz \
+    && tar -xzf  eccodes-2.15.0-Source.tar.gz \
+    && mkdir buildeccode \
+    && cd buildeccode \
+    && cmake ../eccodes-2.15.0-Source \
+    && make \
+    && ctest \
+    && make install \
+    && cd .. \
+    && rm -rf buildeccode \
+    && rm eccodes-2.15.0-Source.tar.gz \
+    && rm -rf eccodes-2.15.0-Source \
+    && pip3 install eccodes-python
+
 
 WORKDIR /data
 CMD /bin/sh

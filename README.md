@@ -18,15 +18,15 @@ This is probably a bad idea but it seems to work for my purposes.
 - wgrib
 - wgrib2
 - gdal
+- eccodes
 - cdo
 - zsh + oh my zsh
+- emacs
 
 # Included Python3 Packages:
 - metpy
 - pytesseract
 - python3-wget
-- anaconda
-- iris (conda only)
 - ipython
 - numpy
 - matplotlib
@@ -53,10 +53,11 @@ This is probably a bad idea but it seems to work for my purposes.
 
 # What can you do with this?
 - Write a python script to pull down the png of an analysis or ascat image and make white space transparent,
+- Extract text from images pulled down from NOAA,
 - Reproject images, 
 - Script grib analysis,
-- Convert NetCDF to Grib2
-- List grib messages
+- Convert NetCDF to Grib2,
+- List grib messages,
+- Extract a region of a grib file,
 - Run this in the cloud and build a server to parse and push grib excerpts while you're sailing, 
 - Probably a lot of other thigns. 
-
