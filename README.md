@@ -87,6 +87,6 @@ Problem: I found hourly historical data but it's 25 gigabytes and GRIB1 and I ca
 Solution: Slice it by the region you care about using cdo.  
 `$ cdo -sellonlatbox,-162,-116,-25,35 big_grib.grb smaller_grib.grb`  
 
-Problem: I've georeferenced an ASCAT image but the white background is annoying. Is there a way to erase it? 
-Solution: Yes! Use ImageMagick to erase the white background, leaving only wind barbs and text behind!
-`$ convert  ascat.jpg -transparent white ascat_transparent.jpg`
+Problem: I've georeferenced an ASCAT image but the white background is annoying. Is there a way to erase it?   
+Solution: Yes! Use ImageMagick to erase the white background, leaving only wind barbs and text behind!  
+`$ convert  ascat.jpg -transparent white ascat_transparent.jpg`  
