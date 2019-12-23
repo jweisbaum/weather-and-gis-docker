@@ -54,8 +54,8 @@ You may have very little experience with software development or navigating comp
 
 # Installation and Use:
 `$ docker build -t weather_image:1.0 .`  
-// Wait like an hour  ...
-// Create a new container that can read/write to local directory.
+// Wait like an hour  ...  
+// Create a new container that can read/write to local directory.  
 `docker run -it --mount type=bind,source=$(pwd),target=/data --name weather_shell weather_image:1.0  /bin/zsh`  
 // Then later after you exit your container, to get back into it:  
 `docker start -a weather_shell`
