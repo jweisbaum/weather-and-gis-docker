@@ -5,6 +5,15 @@ The image is based on Ubuntu 18.04 and includes Python3.8.
 Note that Python3.8 replaces Python2.7 entirely via a symlink.
 This is probably a bad idea but it seems to work for my purposes.
 
+# Why Docker?
+You may have very little experience with software development or navigating complicated documentation written by brilliant scientists working for government agencies. Nevertheless, you should be able to benefit from the incredible software available to you. Docker allows an ocean navigator or curious enthusiast to install and use various utilties on any kind of computing system without needing to know too much.  
+
+- You can access the same programs on your home computer and the boat's nav computer.  
+- You can use all the same utils used by various weather bureaus without needing to build them yourself.  
+- You can install a ton of utilities with one command.  
+- We can build a community and shared knowledge base using the same tool set.  
+- Docker machines can see files on your local machine and vice versa.  
+
 # Included Linux Utilities and Libraries:
 - tesseract
 - imagemagick
@@ -45,8 +54,8 @@ This is probably a bad idea but it seems to work for my purposes.
 
 # Installation and Use:
 `$ docker build -t weather_image:1.0 .`  
-// Wait like an hour  
-// Create a new container that can read/write to local directory.  
+// Wait like an hour  ...
+// Create a new container that can read/write to local directory.
 `docker run -it --mount type=bind,source=$(pwd),target=/data --name weather_shell weather_image:1.0  /bin/zsh`  
 // Then later after you exit your container, to get back into it:  
 `docker start -a weather_shell`
@@ -60,6 +69,7 @@ This is probably a bad idea but it seems to work for my purposes.
 - List grib messages,
 - Extract a region of a grib file,
 - Run this in the cloud and build a server to parse and push grib excerpts while you're sailing, 
+- Write a script to build a KML from your Expedition log, 
 - Probably a lot of other thigns. 
 
 # Examples:
@@ -73,4 +83,5 @@ Solution: Convert it to Grib2 and rename the messages using CDO and wgrib2 like 
 
 Problem: I found hourly historical data but it's 25 gigabytes and GRIB1 and I can't load it!  
 Solution: Slice it by the region you care about using cdo.  
-` cdo -sellonlatbox,-162,-116,-25,35 big_grib.grb smaller_grib.grb`  
+`cdo -sellonlatbox,-162,-116,-25,35 big_grib.grb smaller_grib.grb`  
+
