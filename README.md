@@ -72,7 +72,7 @@ You may have very little experience with software development or navigating comp
 - Extract a region of a grib file,
 - Run this in the cloud and build a server to parse and push grib excerpts while you're sailing, 
 - Write a script to build a KML from your Expedition log, 
-- Probably a lot of other thigns. 
+- Probably a lot of other things. 
 
 # Examples:
 Problem: I have historical data in NetCDF format that Expedition doesn't recognize.  
