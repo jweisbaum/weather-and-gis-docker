@@ -90,3 +90,7 @@ Solution: Slice it by the region you care about using cdo.
 Problem: I've georeferenced an ASCAT image but the white background is annoying. Is there a way to erase it?   
 Solution: Yes! Use ImageMagick to erase the white background, leaving only wind barbs and text behind!  
 `$ convert  ascat.jpg -transparent white ascat_transparent.jpg`  
+
+# Where to go for more:  
+- https://docker-curriculum.com/ Has a good get started guide for Docker.  
+- Consult the documentation for the various tools on the image.  
