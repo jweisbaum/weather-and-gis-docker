@@ -34,6 +34,7 @@ You may have very little experience with software development or navigating comp
 - zsh + oh my zsh
 - emacs
 - tmux  
+- conda
 
 # Included Python3 Packages:
 - metpy
@@ -53,15 +54,22 @@ You may have very little experience with software development or navigating comp
 - geopandas
 - geos
 - cfgrib
+- cftime
+- cfunits
+- iris (conda only)
+- jupyter
+- scipy
+- cython
+- cartopy
 
 
 # Installation and Use:
-`$ docker build -t weather_image:1.0 .`  
-// Wait like an hour  ...  
+```$ docker build -t weather_image:1.0 .  
+// Wait a few hours  ...  
 // Create a new container that can read/write to local directory.  
-`$ docker run -it --mount type=bind,source=$(pwd),target=/data --name weather_shell weather_image:1.0  /bin/zsh`  
+$ docker run -it --mount type=bind,source=$(pwd),target=/data --name weather_shell weather_image:1.0  /bin/zsh  
 // Then later after you exit your container, to get back into it:  
-`$ docker start -a weather_shell`
+$ docker start -a weather_shell```
 
 # What can you do with this?
 - Write a python script to pull down the png of an analysis or ascat image and make white space transparent,
@@ -78,19 +86,19 @@ You may have very little experience with software development or navigating comp
 # Examples:
 Problem: I have historical data in NetCDF format that Expedition doesn't recognize.  
 Solution: Convert it to Grib2 and rename the messages using CDO and wgrib2 like so:  
-`$ cdo -f grb2 copy stupid_netcdf.nc broken_grib.grb`  
-`\\ Then inspect the broken grib messages and find the one that needs to be fixed:`  
-`$ wgrib2 broken_grib.grb`  
-`\\ Replace the message directions:`  
-`$ wgrib2 broken_grib.grb -if ":erroneous grib message" -set_lev "10 m above ground" -fi -grib fixed_grib.grb`  
+```$ cdo -f grb2 copy stupid_netcdf.nc broken_grib.grb  
+\\ Then inspect the broken grib messages and find the one that needs to be fixed: 
+$ wgrib2 broken_grib.grb  
+\\ Replace the message directions:  
+$ wgrib2 broken_grib.grb -if ":erroneous grib message" -set_lev "10 m above ground" -fi -grib fixed_grib.grb```  
 
 Problem: I found hourly historical data but it's 25 gigabytes and GRIB1 and I can't load it!  
 Solution: Slice it by the region you care about using cdo.  
-`$ cdo -sellonlatbox,-162,-116,-25,35 big_grib.grb smaller_grib.grb`  
+```$ cdo -sellonlatbox,-162,-116,-25,35 big_grib.grb smaller_grib.grb```  
 
 Problem: I've georeferenced an ASCAT image but the white background is annoying. Is there a way to erase it?   
 Solution: Yes! Use ImageMagick to erase the white background, leaving only wind barbs and text behind!  
-`$ convert  ascat.jpg -transparent white ascat_transparent.jpg`  
+```$ convert  ascat.jpg -transparent white ascat_transparent.jpg```  
 
 Problem: I have a python script and I want it to call some program.  
 Solution: Use os.system('command')  
@@ -98,6 +106,10 @@ Solution: Use os.system('command')
 os.system('convert ascat.jpg -transparent white ascat_transparent.jpg')
 ```
 
-# Where to go for more:  
+# Where to go for help:  
 - https://docker-curriculum.com/ Has a good get started guide for Docker.  
 - Consult the documentation for the various tools on the image.  
+
+# System Requirements:
+- Docker Desktop
+- A beefy machine (containers run about 4 gb)

@@ -73,7 +73,7 @@ ENV USE_NETCDF4 1
 RUN tar -xzf wgrib2.tgz \
   && cd grib2 \
   && make
-  
+
 RUN cp grib2/wgrib2/wgrib2 /usr/local/bin \
     && rm -rf grib2 \
     && rm wgrib2.tgz
@@ -163,8 +163,36 @@ RUN wget https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.15
     && rm -rf buildeccode \
     && rm eccodes-2.15.0-Source.tar.gz \
     && rm -rf eccodes-2.15.0-Source \
-    && pip3 install eccodes-python
+    && pip3 install eccodes-python 
 
+RUN pip3 install scipy ipython jupyter sympy nose
+
+# Conda and Iris
+RUN cd /tmp \
+    && curl -O https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh \
+    && bash Anaconda3-2019.03-Linux-x86_64.sh -b \
+    && rm Anaconda3-2019.03-Linux-x86_64.sh 
+ENV PATH ~/anaconda3/bin:$PATH
+RUN ~/anaconda3/bin/conda update conda
+RUN ~/anaconda3/bin/conda update --all
+RUN ~/anaconda3/bin/conda install -c conda-forge iris
+
+RUN apt-get install libxml2 libxml2-dev \
+    language-pack-en \
+    libz-dev \
+    libncurses-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libudunits2-dev -y 
+
+RUN pip3 --no-cache-dir install --upgrade \
+        setuptools \
+        wheel
+
+RUN pip3 install Cython
+RUN pip3 install cartopy cftime oktopus tqdm cf-units dask stratify pyugrid
+
+# Thank goodness we're done.
 
 WORKDIR /data
 CMD /bin/zsh
