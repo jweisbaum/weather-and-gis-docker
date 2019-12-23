@@ -33,6 +33,7 @@ You may have very little experience with software development or navigating comp
 - cdo
 - zsh + oh my zsh
 - emacs
+- tmux  
 
 # Included Python3 Packages:
 - metpy

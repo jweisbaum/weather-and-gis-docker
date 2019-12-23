@@ -167,4 +167,4 @@ RUN wget https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.15
 
 
 WORKDIR /data
-CMD /bin/sh
+CMD /bin/zsh
