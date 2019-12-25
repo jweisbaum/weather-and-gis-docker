@@ -191,6 +191,8 @@ RUN pip3 --no-cache-dir install --upgrade \
 
 RUN pip3 install Cython
 RUN pip3 install cartopy cftime oktopus tqdm cf-units dask stratify pyugrid
+RUN apt-get install -y aptitude
+RUN aptitude install nco -y
 
 # Thank goodness we're done.
 
