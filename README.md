@@ -61,7 +61,10 @@ You may have very little experience with software development or navigating comp
 - scipy
 - cython
 - cartopy
-
+- pynio (conda only)
+- pyngl (conda only)
+- ncl (conda only)
+- wrf
 
 # Installation and Use:
 

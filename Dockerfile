@@ -175,7 +175,12 @@ RUN cd /tmp \
 ENV PATH ~/anaconda3/bin:$PATH
 RUN ~/anaconda3/bin/conda update conda
 RUN ~/anaconda3/bin/conda update --all
-RUN ~/anaconda3/bin/conda install -c conda-forge iris
+RUN ~/anaconda3/bin/conda install -c conda-forge iris pynio pyngl ncl
+
+
+RUN git clone https://github.com/NCAR/wrf-python \
+    && cd wrf-python \
+    && pip3 install .
 
 RUN apt-get install libxml2 libxml2-dev \
     language-pack-en \
