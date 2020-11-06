@@ -4,17 +4,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install software-properties-common -y
 RUN add-apt-repository ppa:ubuntugis/ppa
 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
+
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+RUN dpkg-reconfigure --frontend noninteractive tzdata
+
 RUN apt-get update \
     && apt-get install tesseract-ocr -y \
 	python3.8 \
 	python3-pip \
 	python3-setuptools \
+    python3-opencv \
+    python3-scipy \
+    python3-matplotlib \
 	wget \
 	curl \
     	gfortran \
     	gcc \
 	wget \
 	make \
+    m4 \
+    git \
+    cron \
+    emacs \
+    nano \
+    tmux \
 	build-essential \
 	checkinstall \
 	libx11-dev \
@@ -27,6 +41,10 @@ RUN apt-get update \
     && apt-get clean \
     && apt-get autoremove
 
+# Install Node
+RUN curl -sL https://deb.nodesource.com/setup_15.x | bash - \
+    && apt-get install -y nodejs
+
 RUN rm -f /usr/bin/python && ln -s /usr/bin/python3 /usr/bin/python
 
 RUN pip3 install metpy
@@ -34,9 +52,6 @@ RUN pip3 install metpy
 RUN pip3 install pytesseract \
     && pip3 install python3-wget
 
-RUN apt-get update && apt-get install -y cron
-RUN apt-get install m4 -y
-RUN apt-get install git -y
 
 # HDF5 Installation
 RUN wget https://www.hdfgroup.org/package/bzip2/?wpdmdl=4300 \
@@ -82,21 +97,49 @@ RUN cp grib2/wgrib2/wgrib2 /usr/local/bin \
 RUN cd /opt \
     && wget http://www.imagemagick.org/download/ImageMagick.tar.gz \
     && tar xvzf ImageMagick.tar.gz \
-    && cd ImageMagick-7.0.9-10 \
+    && for dir in ImageMagick*;do mv $dir ImageMagick;done \
+    && cd ImageMagick \
     && touch configure \
     && ./configure \
     && make \
     && make install \
-    && ldconfig /usr/local/lib
+    && ldconfig /usr/local/lib \
+    && cd .. \
+    && rm -rf ImageMagick \
+    && rm -rf ImageMagick.tar.gz
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 
-RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
-RUN dpkg-reconfigure --frontend noninteractive tzdata
 RUN apt-get install cdo -y
 
 RUN apt-get install gdal-bin -y \
     && apt-get install libgdal-dev -y
+
+RUN apt-get install libxml2 libxml2-dev \
+    language-pack-en \
+    libz-dev \
+    libncurses-dev \
+    libbz2-dev \
+    liblzma-dev \
+    libudunits2-dev -y 
+
+RUN pip3 --no-cache-dir install --upgrade \
+        setuptools \
+        wheel
+
+RUN pip3 install Cython
+
+RUN apt-get install libproj-dev proj-data proj-bin unzip -y \
+    && apt-get install libgeos-dev -y \
+    && apt-get install libpdal-dev pdal libpdal-plugin-python -y
+
+# RUN cd /tmp \
+#     && wget -c https://download.osgeo.org/proj/proj-datumgrid-world-latest.zip \
+#     && wget -c https://download.osgeo.org/proj/proj-datumgrid-oceania-latest.zip \
+#     && wget -c https://download.osgeo.org/proj/proj-datumgrid-north-america-latest.zip \
+#     && wget -c https://download.osgeo.org/proj/proj-datumgrid-europe-latest.zip \
+#     && cd /usr/share/proj/ \
+#     && for datumfile in $(ls /tmp/proj-datumgrid-*-latest.zip) ; do unzip $datumfile && rm -f $datumfile; done
+
 
 RUN pip3 install numpy \
 	&& pip3 install matplotlib \
@@ -107,8 +150,10 @@ RUN pip3 install numpy \
 	&& pip3 install shapely \
 	&& pip3 install sklearn \
 	&& pip3 install scikit-image \
-	&& pip3 install geopandas \
-	&& pip3 install geos
+    && pip3 install pandas 
+
+# pip3 install geopandas
+# pip3 install geos
 
 RUN apt-get install libeccodes0 \
     && pip3 install cfgrib
@@ -122,7 +167,7 @@ RUN wget ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/wgrib.tar \
     && make \
     && cp wgrib /usr/bin \
     && cd .. \
-    && rm -rf wgrib1
+    && rm -rf wgrib1 
 
 RUN git clone https://github.com/powerline/fonts.git --depth=1 \
     && cd fonts \
@@ -136,8 +181,6 @@ RUN apt-get install zsh fonts-powerline -y \
     && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
     && chsh -s $(which zsh)
 
-# Editors
-RUN apt-get install emacs nano tmux -y
 
 # CMake
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.15.2/cmake-3.15.2.tar.gz \
@@ -175,31 +218,39 @@ RUN cd /tmp \
 ENV PATH ~/anaconda3/bin:$PATH
 RUN ~/anaconda3/bin/conda update conda
 RUN ~/anaconda3/bin/conda update --all
-RUN ~/anaconda3/bin/conda install -c conda-forge iris pynio pyngl ncl
+RUN ~/anaconda3/bin/conda install -c conda-forge iris pynio pyngl ncl 
 
 
 RUN git clone https://github.com/NCAR/wrf-python \
     && cd wrf-python \
     && pip3 install .
 
-RUN apt-get install libxml2 libxml2-dev \
-    language-pack-en \
-    libz-dev \
-    libncurses-dev \
-    libbz2-dev \
-    liblzma-dev \
-    libudunits2-dev -y 
 
-RUN pip3 --no-cache-dir install --upgrade \
-        setuptools \
-        wheel
-
-RUN pip3 install Cython
 RUN pip3 install cartopy cftime oktopus tqdm cf-units dask stratify pyugrid
 RUN apt-get install -y aptitude
 RUN aptitude install nco -y
 
-# Thank goodness we're done.
+# https://github.com/cambecc/grib2json
+# RUN git clone https://github.com/cambecc/grib2json.git \
+#     && cd grib2json \
+#     && 
+# https://www.npmjs.com/package/grib2json
+# Open CV
+# WRT
+# Jupyter, iPython
+# cuda?
+# s2
+# h3
+# https://github.com/sahrk/DGGRID
+# aws command line
+# open mp
+# tensorflow
+# pytorch
+# keras
+# pygrib
+
+
+
 
 WORKDIR /data
 CMD /bin/zsh
