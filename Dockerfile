@@ -253,7 +253,7 @@ RUN wget https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.15
     && rm -rf eccodes-2.15.0-Source \
     && pip3 install eccodes-python 
 
-#RUN pip3 install scipy ipython jupyter sympy nose
+RUN pip3 install scipy ipython jupyter sympy nose
 
 # Conda and Iris
 RUN cd /tmp \
@@ -283,7 +283,6 @@ RUN aptitude install nco -y
 # Open CV
 # WRT
 # Jupyter, iPython
-# cuda?
 # s2
 # h3
 # https://github.com/sahrk/DGGRID
@@ -293,17 +292,195 @@ RUN aptitude install nco -y
 # pytorch
 # keras
 # pygrib
+# https://github.com/Unidata/netcdf-java
+# https://github.com/Unidata/thredds
+# 
 
-RUN apt-get install libgflags-dev libgoogle-glog-dev libgtest-dev libssl-dev swig
-RUN mkdir s2Source
-RUN cd s2Source
-RUN git clone https://github.com/google/s2geometry.git
-RUN cd s2geometry
-RUN mkdir build
-RUN cd build
-RUN cmake
-RUN make
-RUN make install
+# RUN apt-get install libgflags-dev libgoogle-glog-dev libgtest-dev libssl-dev swig
+# RUN mkdir s2Source \
+#     && cd s2Source \
+#     && git clone https://github.com/google/s2geometry.git \
+#     && cd s2geometry \
+#     && mkdir build \
+#     && cd build \
+#     && cmake ..\
+#     && make \
+#     && make install
+RUN apt-get install csh
+
+####################################
+##Additional linux and command-line tools
+#Install add-apt-repository. This needs to be done starting Ubuntu 16.x
+RUN apt-get update \
+	&& apt-get install -yq --no-install-recommends \
+	software-properties-common \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
+
+####################################
+##WRF, WRF-Hydro, and WPS dependencies and tools used for compilation
+RUN apt-get update \
+    && apt-get install -yq --no-install-recommends \
+    vim \
+    nano \
+    wget \
+    curl \
+    file \
+    bzip2 \
+    ca-certificates \
+    libhdf5-dev \
+    gfortran \
+    openmpi-bin \
+    libopenmpi-dev \
+    valgrind \
+    m4 \
+    make \ 
+    libswitch-perl \
+    git \
+    csh \
+    bc \
+    libpng-dev \
+    libjasper-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* 
+
+# install netCDF-Fortran
+ENV LD_LIBRARY_PATH=${NCDIR}/lib
+RUN NETCDF_F_VERSION="4.4.4" \
+    && cd /tmp \
+    && wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-${NETCDF_F_VERSION}.tar.gz \
+    && tar -xf netcdf-fortran-${NETCDF_F_VERSION}.tar.gz \
+    && cd /tmp/netcdf-fortran-${NETCDF_F_VERSION} \
+    && CPPFLAGS=-I${NCDIR}/include LDFLAGS=-L${NCDIR}/lib ./configure --prefix=${NFDIR} \
+    && make \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/netcdf-fortran-${NETCDF_F_VERSION}
+
+###################################
+## create docker user
+RUN useradd -ms /bin/bash docker
+RUN usermod -aG sudo docker
+RUN chmod -R 777 /home/docker/
+############################
+
+###WRF | WRF-Hydro and WPS
+
+#Set WRF and WPS version argument
+ARG WRF_VERSION="4.1.2"
+ARG WPS_VERSION="4.1"
+
+#Set WRF-Hydro version argument
+ARG HYDRO_VERSION="5.1.1-beta"
+
+#Install coupled WRF | WRF-Hydro AND WPS
+WORKDIR /home/docker/WRF_WPS
+#
+# Download sources for versions specified by the WRFWPS_VERSION and HYDRO_VERSION arguments
+#
+RUN wget https://github.com/wrf-model/WRF/archive/v${WRF_VERSION}.tar.gz \
+        && tar -zxf v${WRF_VERSION}.tar.gz \
+        && mv WRF-${WRF_VERSION} WRF \
+        && rm v${WRF_VERSION}.tar.gz
+#RUN wget https://github.com/NCAR/wrf_hydro_nwm_public/archive/v${HYDRO_VERSION}.tar.gz \
+#        && tar -zxf v${HYDRO_VERSION}.tar.gz \
+#        && rm -r WRF/hydro \
+#        && cp -r wrf_hydro_nwm_public*/trunk/NDHMS WRF/hydro \
+#        && rm v${HYDRO_VERSION}.tar.gz
+RUN git clone --single-branch --branch v5.1.1 https://github.com/NCAR/wrf_hydro_nwm_public.git \
+        && rm -r WRF/hydro \
+        && cp -r wrf_hydro_nwm_public*/trunk/NDHMS WRF/hydro 
+RUN wget https://github.com/wrf-model/WPS/archive/v${WPS_VERSION}.tar.gz \
+	&& tar -zxf v${WPS_VERSION}.tar.gz \
+        && mv WPS-${WPS_VERSION} WPS \
+	&& rm v${WPS_VERSION}.tar.gz
+
+# Set paths to required libraries
+ENV JASPERLIB=/usr/lib
+ENV JASPERINC=/usr/include
+ENV NETCDF=/usr/local
+
+# Set WRF-Hydro environment variables
+ENV WRF_HYDRO=1
+ENV HYDRO_D=1
+ENV SPATIAL_SOIL=0
+ENV WRF_HYDRO_RAPID=0
+ENV WRFIO_NCD_LARGE_FILE_SUPPORT=1
+ENV WRF_HYDRO_NUDGING=0
+
+# Build WRF first, required for WPS
+WORKDIR /home/docker/WRF_WPS/WRF
+RUN printf '34\n1\n' | ./configure \
+	&& ./compile em_real  
+
+# Build WPS second after WRF is built
+WORKDIR /home/docker/WRF_WPS/WPS
+RUN printf '1\n' | ./configure \
+	&& ./compile 
+
+RUN chmod -R 777 /home/docker/WRF_WPS
+
+# ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+# RUN apt-get update \
+#     && apt-get install -y --no-install-recommends tzdata curl ca-certificates fontconfig locales \
+#     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+#     && locale-gen en_US.UTF-8 \
+#     && rm -rf /var/lib/apt/lists/*
+
+# ENV JAVA_VERSION jdk-11.0.8+10
+
+# RUN set -eux; \
+#     ARCH="$(dpkg --print-architecture)"; \
+#     case "${ARCH}" in \
+#        aarch64|arm64) \
+#          ESUM='286c869dbaefda9b470ae71d1250fdecf9f06d8da97c0f7df9021d381d749106'; \
+#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.8_10.tar.gz'; \
+#          ;; \
+#        armhf|armv7l) \
+#          ESUM='ffa627b2d0c6001448bb8f1f24f7c9921dad37e67637f6ed0a9a479e680a3393'; \
+#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_arm_linux_hotspot_11.0.8_10.tar.gz'; \
+#          ;; \
+#        ppc64el|ppc64le) \
+#          ESUM='89231e1667d7cc4202d1a401497bb287d4eb12281c90c17e2570211cc4e901a3'; \
+#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_ppc64le_linux_hotspot_11.0.8_10.tar.gz'; \
+#          ;; \
+#        s390x) \
+#          ESUM='dc0e715c17abcb12bedf77c638e58e67d828d3c4bf24a898f0d4b053caaeb25f'; \
+#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_s390x_linux_hotspot_11.0.8_10.tar.gz'; \
+#          ;; \
+#        amd64|x86_64) \
+#          ESUM='98615b1b369509965a612232622d39b5cefe117d6189179cbad4dcef2ee2f4e1'; \
+#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.8_10.tar.gz'; \
+#          ;; \
+#        *) \
+#          echo "Unsupported arch: ${ARCH}"; \
+#          exit 1; \
+#          ;; \
+#     esac; \
+#     curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
+#     echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+#     mkdir -p /opt/java/openjdk; \
+#     cd /opt/java/openjdk; \
+#     tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
+#     rm -rf /tmp/openjdk.tar.gz;
+
+# ENV JAVA_HOME=/opt/java/openjdk \
+#     PATH="/opt/java/openjdk/bin:$PATH"
+
+# RUN apt-get update && apt-get install -y \
+# 	        curl \
+# 	        wget \
+# 	        unzip && \
+# 	        wget https://github.com/cambecc/grib2json/archive/master.zip && \
+# 	        unzip master.zip && \
+# 	        cd grib2json-master && \
+# 	        mvn package && \
+# 	        cd target && \
+# 	        tar -xvf grib2json-0.8.0-SNAPSHOT.tar.gz && \
+# 	        cp grib2json-*/bin/* /usr/bin && \
+# 	        cp grib2json-*/lib/* /usr/lib
+
 
 
 
