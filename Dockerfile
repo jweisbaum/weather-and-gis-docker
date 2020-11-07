@@ -294,6 +294,17 @@ RUN aptitude install nco -y
 # keras
 # pygrib
 
+RUN sudo apt-get install libgflags-dev libgoogle-glog-dev libgtest-dev libssl-dev
+RUN sudo apt-get install swig
+RUN mkdir s2Source
+RUN cd s2Source
+RUN git clone https://github.com/google/s2geometry.git
+RUN cd s2geometry
+RUN mkdir build
+RUN cd build
+RUN cmake
+RUN make
+RUN make install
 
 
 
