@@ -308,6 +308,7 @@ RUN aptitude install nco -y
 #     && make install
 RUN apt-get install csh
 
+
 ####################################
 ##Additional linux and command-line tools
 #Install add-apt-repository. This needs to be done starting Ubuntu 16.x
@@ -316,6 +317,10 @@ RUN apt-get update \
 	software-properties-common \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
+
+RUN add-apt-repository "deb http://security.ubuntu.com/ubuntu xenial-security main"
+RUN apt update
+RUN apt install libjasper1 libjasper-dev
 
 ####################################
 ##WRF, WRF-Hydro, and WPS dependencies and tools used for compilation
@@ -343,6 +348,7 @@ RUN apt-get update \
     libjasper-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
+
 
 # install netCDF-Fortran
 ENV LD_LIBRARY_PATH=${NCDIR}/lib
