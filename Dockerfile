@@ -253,7 +253,7 @@ RUN wget https://confluence.ecmwf.int/download/attachments/45757960/eccodes-2.15
     && rm -rf eccodes-2.15.0-Source \
     && pip3 install eccodes-python 
 
-RUN pip3 install scipy ipython jupyter sympy nose
+#RUN pip3 install scipy ipython jupyter sympy nose
 
 # Conda and Iris
 RUN cd /tmp \
@@ -294,8 +294,7 @@ RUN aptitude install nco -y
 # keras
 # pygrib
 
-RUN sudo apt-get install libgflags-dev libgoogle-glog-dev libgtest-dev libssl-dev
-RUN sudo apt-get install swig
+RUN apt-get install libgflags-dev libgoogle-glog-dev libgtest-dev libssl-dev swig
 RUN mkdir s2Source
 RUN cd s2Source
 RUN git clone https://github.com/google/s2geometry.git
