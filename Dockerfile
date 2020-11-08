@@ -501,6 +501,8 @@ RUN set -eux; \
     tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
     rm -rf /tmp/openjdk.tar.gz;
 
+RUN apt-get install maven -y
+
 ENV JAVA_HOME=/opt/java/openjdk \
     PATH="/opt/java/openjdk/bin:$PATH"
 
@@ -517,7 +519,7 @@ RUN apt-get update && apt-get install -y \
 	        cp grib2json-*/bin/* /usr/bin && \
 	        cp grib2json-*/lib/* /usr/lib
 
-RUN apt-get install maven -y
+
 
 
 
