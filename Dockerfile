@@ -486,8 +486,6 @@ RUN wget --no-verbose -O /tmp/apache-maven-3.3.9-bin.tar.gz http://www-eu.apache
     rm -f /tmp/apache-maven-3.3.9-bin.tar.gz
 
 ENV MAVEN_HOME /opt/maven
-ENV JAVA_HOME=/opt/java/openjdk \
-    PATH="/opt/java/openjdk/bin:$PATH"
 
 RUN apt-get update && apt-get install -y \
 	        curl \
