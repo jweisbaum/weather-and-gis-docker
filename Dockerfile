@@ -503,6 +503,26 @@ RUN apt-get update && apt-get install -y \
 
 
 ### OpenCV
+RUN apt-get update \
+    && apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        unzip \
+        yasm \
+        pkg-config \
+        libswscale-dev \
+        libtbb2 \
+        libtbb-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libtiff-dev \
+        libavformat-dev \
+        libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /
 ENV OPENCV_VERSION="4.1.1"
 RUN wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip \
 && unzip ${OPENCV_VERSION}.zip \
