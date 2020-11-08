@@ -294,8 +294,18 @@ RUN aptitude install nco -y
 # pygrib
 # https://github.com/Unidata/netcdf-java
 # https://github.com/Unidata/thredds
+# https://www2.mmm.ucar.edu/wrf/OnLineTutorial/compilation_tutorial.php#STEP7
+# https://www2.mmm.ucar.edu/wrf/users/download/get_sources_wps_geog.html
+# https://www.cgal.org/
+# https://mpitutorial.com/tutorials/launching-an-amazon-ec2-mpi-cluster/
+# http://mpas-dev.github.io/
+# https://wrf-python.readthedocs.io/en/latest/
+# https://www.mi.uni-hamburg.de/en/arbeitsgruppen/memi/modelle/metras.html
+# https://www.mi.uni-hamburg.de/en/arbeitsgruppen/memi/modelle/mitras.html
+# http://homepages.see.leeds.ac.uk/~lecag/microscale/index.html
 # 
 
+######## S2 ##############
 # RUN apt-get install libgflags-dev libgoogle-glog-dev libgtest-dev libssl-dev swig
 # RUN mkdir s2Source \
 #     && cd s2Source \
@@ -306,6 +316,8 @@ RUN aptitude install nco -y
 #     && cmake ..\
 #     && make \
 #     && make install
+
+
 RUN apt-get install csh
 
 
@@ -444,66 +456,68 @@ RUN printf '1\n' | ./configure \
 
 RUN chmod -R 777 /home/docker/WRF_WPS
 
-# ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-# RUN apt-get update \
-#     && apt-get install -y --no-install-recommends tzdata curl ca-certificates fontconfig locales \
-#     && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
-#     && locale-gen en_US.UTF-8 \
-#     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tzdata curl ca-certificates fontconfig locales \
+    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen en_US.UTF-8 \
+    && rm -rf /var/lib/apt/lists/*
 
-# ENV JAVA_VERSION jdk-11.0.8+10
+ENV JAVA_VERSION jdk-11.0.8+10
 
-# RUN set -eux; \
-#     ARCH="$(dpkg --print-architecture)"; \
-#     case "${ARCH}" in \
-#        aarch64|arm64) \
-#          ESUM='286c869dbaefda9b470ae71d1250fdecf9f06d8da97c0f7df9021d381d749106'; \
-#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.8_10.tar.gz'; \
-#          ;; \
-#        armhf|armv7l) \
-#          ESUM='ffa627b2d0c6001448bb8f1f24f7c9921dad37e67637f6ed0a9a479e680a3393'; \
-#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_arm_linux_hotspot_11.0.8_10.tar.gz'; \
-#          ;; \
-#        ppc64el|ppc64le) \
-#          ESUM='89231e1667d7cc4202d1a401497bb287d4eb12281c90c17e2570211cc4e901a3'; \
-#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_ppc64le_linux_hotspot_11.0.8_10.tar.gz'; \
-#          ;; \
-#        s390x) \
-#          ESUM='dc0e715c17abcb12bedf77c638e58e67d828d3c4bf24a898f0d4b053caaeb25f'; \
-#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_s390x_linux_hotspot_11.0.8_10.tar.gz'; \
-#          ;; \
-#        amd64|x86_64) \
-#          ESUM='98615b1b369509965a612232622d39b5cefe117d6189179cbad4dcef2ee2f4e1'; \
-#          BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.8_10.tar.gz'; \
-#          ;; \
-#        *) \
-#          echo "Unsupported arch: ${ARCH}"; \
-#          exit 1; \
-#          ;; \
-#     esac; \
-#     curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
-#     echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
-#     mkdir -p /opt/java/openjdk; \
-#     cd /opt/java/openjdk; \
-#     tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
-#     rm -rf /tmp/openjdk.tar.gz;
+RUN set -eux; \
+    ARCH="$(dpkg --print-architecture)"; \
+    case "${ARCH}" in \
+       aarch64|arm64) \
+         ESUM='286c869dbaefda9b470ae71d1250fdecf9f06d8da97c0f7df9021d381d749106'; \
+         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.8_10.tar.gz'; \
+         ;; \
+       armhf|armv7l) \
+         ESUM='ffa627b2d0c6001448bb8f1f24f7c9921dad37e67637f6ed0a9a479e680a3393'; \
+         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_arm_linux_hotspot_11.0.8_10.tar.gz'; \
+         ;; \
+       ppc64el|ppc64le) \
+         ESUM='89231e1667d7cc4202d1a401497bb287d4eb12281c90c17e2570211cc4e901a3'; \
+         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_ppc64le_linux_hotspot_11.0.8_10.tar.gz'; \
+         ;; \
+       s390x) \
+         ESUM='dc0e715c17abcb12bedf77c638e58e67d828d3c4bf24a898f0d4b053caaeb25f'; \
+         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_s390x_linux_hotspot_11.0.8_10.tar.gz'; \
+         ;; \
+       amd64|x86_64) \
+         ESUM='98615b1b369509965a612232622d39b5cefe117d6189179cbad4dcef2ee2f4e1'; \
+         BINARY_URL='https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.8_10.tar.gz'; \
+         ;; \
+       *) \
+         echo "Unsupported arch: ${ARCH}"; \
+         exit 1; \
+         ;; \
+    esac; \
+    curl -LfsSo /tmp/openjdk.tar.gz ${BINARY_URL}; \
+    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
+    mkdir -p /opt/java/openjdk; \
+    cd /opt/java/openjdk; \
+    tar -xf /tmp/openjdk.tar.gz --strip-components=1; \
+    rm -rf /tmp/openjdk.tar.gz;
 
-# ENV JAVA_HOME=/opt/java/openjdk \
-#     PATH="/opt/java/openjdk/bin:$PATH"
+ENV JAVA_HOME=/opt/java/openjdk \
+    PATH="/opt/java/openjdk/bin:$PATH"
 
-# RUN apt-get update && apt-get install -y \
-# 	        curl \
-# 	        wget \
-# 	        unzip && \
-# 	        wget https://github.com/cambecc/grib2json/archive/master.zip && \
-# 	        unzip master.zip && \
-# 	        cd grib2json-master && \
-# 	        mvn package && \
-# 	        cd target && \
-# 	        tar -xvf grib2json-0.8.0-SNAPSHOT.tar.gz && \
-# 	        cp grib2json-*/bin/* /usr/bin && \
-# 	        cp grib2json-*/lib/* /usr/lib
+RUN apt-get update && apt-get install -y \
+	        curl \
+	        wget \
+	        unzip && \
+	        wget https://github.com/cambecc/grib2json/archive/master.zip && \
+	        unzip master.zip && \
+	        cd grib2json-master && \
+	        mvn package && \
+	        cd target && \
+	        tar -xvf grib2json-0.8.0-SNAPSHOT.tar.gz && \
+	        cp grib2json-*/bin/* /usr/bin && \
+	        cp grib2json-*/lib/* /usr/lib
+
+RUN apt-get install maven -y
 
 
 
