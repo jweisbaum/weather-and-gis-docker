@@ -456,29 +456,26 @@ RUN printf '1\n' | ./configure \
 
 RUN chmod -R 777 /home/docker/WRF_WPS
 
-ENV JDK_VERSION_MAJOR 8
-ENV JDK_VERSION_UPDATE 201
+# This is in accordance to : https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-get-on-ubuntu-16-04
+RUN apt-get update && \
+	apt-get install -y openjdk-8-jdk && \
+	apt-get install -y ant && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/* && \
+	rm -rf /var/cache/oracle-jdk8-installer;
+	
+# Fix certificate issues, found as of 
+# https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
+RUN apt-get update && \
+	apt-get install -y ca-certificates-java && \
+	apt-get clean && \
+	update-ca-certificates -f && \
+	rm -rf /var/lib/apt/lists/* && \
+	rm -rf /var/cache/oracle-jdk8-installer;
 
-ENV JDK_VERSION ${JDK_VERSION_MAJOR}u${JDK_VERSION_UPDATE}
-ENV JDK_VERSION_DOT 1.${JDK_VERSION_MAJOR}.0
-ENV JDK_VERSION_DOT_UPDATE ${JDK_VERSION_DOT}_${JDK_VERSION_UPDATE}
-ENV JDK_DOWNLOAD http://storage.exoplatform.org/public/java/jdk/oracle/${JDK_VERSION}/jdk-${JDK_VERSION}-linux-x64.tar.gz
-
-# Install Oracle Java 8 SDK
-ENV JVM_DIR /usr/lib/jvm
-RUN mkdir -p "${JVM_DIR}"
-
-RUN wget -q --no-cookies --no-check-certificate \
-  -O "${DOWNLOAD_DIR}/jdk-${JDK_VERSION}-linux-x64.tar.gz" "${JDK_DOWNLOAD}" \
-  && cd "${JVM_DIR}" \
-  && tar --no-same-owner -xzf "${DOWNLOAD_DIR}/jdk-${JDK_VERSION}-linux-x64.tar.gz" \
-  && rm -f "${DOWNLOAD_DIR}/jdk-${JDK_VERSION}-linux-x64.tar.gz" \
-  && mv "${JVM_DIR}/jdk${JDK_VERSION_DOT_UPDATE}" "${JVM_DIR}/java-${JDK_VERSION_DOT_UPDATE}-oracle-x64" \
-  && ln -s "${JVM_DIR}/java-${JDK_VERSION_DOT_UPDATE}-oracle-x64" "${JVM_DIR}/java-${JDK_VERSION_DOT}-oracle-x64"
-
-ADD java-x64.jinfo ${JVM_DIR}/.java-x64.jinfo
-RUN cat "${JVM_DIR}/.java-x64.jinfo" | grep -E '^(jre|jdk|hl)' | awk '{print "/usr/bin/" $2 " " $2 " " $3 " 30 \n"}' | xargs -t -n4 gosu root update-alternatives --install
-ENV JAVA_HOME ${JVM_DIR}/java-${JDK_VERSION_DOT}-oracle-x64
+# Setup JAVA_HOME, this is useful for docker commandline
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME
 
 
 # Install maven 3.3.9
