@@ -350,6 +350,23 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* 
 
 
+## install netCDF-C
+ENV NCDIR=/usr/local
+ENV NFDIR=/usr/local
+ENV H5DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+ENV HDF5_DIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+
+RUN NETCDF_C_VERSION="4.4.1.1" \
+    && wget ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-${NETCDF_C_VERSION}.tar.gz -P /tmp \
+    && tar -xf /tmp/netcdf-${NETCDF_C_VERSION}.tar.gz -C /tmp \
+    && cd /tmp/netcdf-${NETCDF_C_VERSION} \
+    && CPPFLAGS=-I${H5DIR}/include LDFLAGS=-L${H5DIR}/lib ./configure --prefix=/usr/local \
+    && cd /tmp/netcdf-${NETCDF_C_VERSION} \
+    && make \
+    && cd /tmp/netcdf-${NETCDF_C_VERSION} \
+    && make install \
+    && rm -rf /tmp/netcdf-${NETCDF_C_VERSION}
+
 # install netCDF-Fortran
 ENV LD_LIBRARY_PATH=${NCDIR}/lib
 RUN NETCDF_F_VERSION="4.4.4" \
@@ -362,6 +379,7 @@ RUN NETCDF_F_VERSION="4.4.4" \
     && make install \
     && cd / \
     && rm -rf /tmp/netcdf-fortran-${NETCDF_F_VERSION}
+
 
 ###################################
 ## create docker user
